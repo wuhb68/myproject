@@ -1,7 +1,8 @@
-from django.shortcuts import render, HttpResponse
-from web import models
-from utils.encrypt import md5
 from django import forms
+from django.shortcuts import render, HttpResponse
+
+from utils.encrypt import md5
+from web import models
 
 
 class LoginForm(forms.Form):
@@ -29,8 +30,8 @@ class LoginForm(forms.Form):
 
     def clean(self):
         print(self.cleaned_data)
-        from django.core.exceptions import ValidationError
-        raise ValidationError('整体错误')
+        # from django.core.exceptions import ValidationError
+        # raise ValidationError('整体错误')
 
 def login(request):
     if request.method == 'GET':
@@ -43,8 +44,8 @@ def login(request):
     role = form.cleaned_data.get('role')
     username = form.cleaned_data.get('username')
     password = form.cleaned_data.get('password')
-    if password:
-        password = md5(password)
+    # if password:
+    password = md5(password)
     if role == '1':
         user_object = models.Administrator.objects.filter(active=1, username=username, password=password).first()
     else:
