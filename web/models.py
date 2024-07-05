@@ -57,6 +57,7 @@ class PricePolicy(models.Model):
     1000  5
     2000  8
     """
+
     count = models.IntegerField(verbose_name='价格策略')
     price = models.DecimalField(verbose_name='价格', decimal_places=2, max_digits=10, default=0)
 
