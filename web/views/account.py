@@ -17,7 +17,7 @@ class LoginForm(forms.Form):
         username = self.cleaned_data['username']
         if len(username) < 3:
             from django.core.exceptions import ValidationError
-            raise ValidationError('用户名格式错误')
+            raise ValidationError('用户名格式错误!')
         return username
 
 
