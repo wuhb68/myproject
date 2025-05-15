@@ -39,7 +39,7 @@ def login(request):
         return render(request, 'login.html', {'form': form})
     form = LoginForm(data=request.POST)
     if not form.is_valid():
-        print('验证失败')
+        print('验证失败!')
         return render(request, 'login.html', {'form': form})
     role = form.cleaned_data.get('role')
     username = form.cleaned_data.get('username')
