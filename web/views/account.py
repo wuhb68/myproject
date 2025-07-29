@@ -1,5 +1,6 @@
 import smtplib
 from django import forms
+from django.core.validators import RegexValidator
 from django.shortcuts import render, HttpResponse
 
 from email.mime.text import MIMEText
@@ -87,7 +88,17 @@ def send_163_email(subject, content):
     finally:
         server.quit()  # 关闭连接
 
+
+class SmsloginForm(forms.Form):
+    role = forms.ChoiceField(label='角色', choices=(('1', '管理员'), ('2', '客户')), widget=forms.Select(attrs={
+        'class': 'form-control'}))
+    mobile = forms.CharField(label='手机号',
+                             widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '手机号'}))
+    code = forms.CharField(label='短信验证码',
+                           validators=[RegexValidator(r'^[1-9]+$', "验证码必须为数字"), ],  # 正则表达式
+                           widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '短信验证码'}))
+
 def sms_login(request):
     if request.method == 'GET':
-        form = LoginForm()
+        form = SmsloginForm()
         return render(request, 'sms_login.html', {'form': form})
