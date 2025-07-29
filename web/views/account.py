@@ -3,6 +3,7 @@ from django import forms
 from django.shortcuts import render, HttpResponse
 
 from email.mime.text import MIMEText
+from email.header import Header
 from utils.encrypt import md5
 from web import models
 
@@ -57,32 +58,36 @@ def login(request):
         return render(request, 'login.html', {'error': '用户名或密码错误', 'form': form})
     return HttpResponse('登陆成功')
 
-def send_163_email(sender, auth_code, receiver, subject, content):
-    # 设置邮件内容
+
+def send_163_email(subject, content):
+    sender = 'haibin681528@163.com'
+    receiver = '1071794363@qq.com'
+
+    # 邮箱账号和密码（注意：这里的密码不是登录密码，而是授权码）
+    email_password = 'LJu4nAW2EKjeJ36r'  # 这是授权码，不是登录密码
+
+    # 邮件内容
     msg = MIMEText(content, 'plain', 'utf-8')
-    msg['From'] = formataddr(('发件人昵称', sender))  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
-    msg['To'] = formataddr(('收件人昵称', receiver))  # 括号里的对应收件人邮箱昵称、收件人邮箱账号
-    msg['Subject'] = subject  # 邮件的主题
+    msg['Subject'] = Header(subject, 'utf-8')
+    msg['From'] = sender
+    msg['To'] = receiver
+
+    # 网易邮箱的SMTP服务器地址和端口
+    smtp_server = 'smtp.163.com'
+    smtp_port = 465  # 或者使用25/587，取决于你的服务器配置和安全性需求
 
     try:
-        # 163邮箱的SMTP服务器地址和端口
-        server = smtplib.SMTP_SSL('smtp.163.com', 465)
-        server.login(sender, auth_code)  # 登录邮箱
-        server.sendmail(sender, [receiver], msg.as_string())  # 发送邮件
-        server.quit()
+        # 创建SMTP对象并连接到服务器
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)  # 使用SSL连接（推荐）
+        server.login(sender, email_password)  # 登录邮箱账号
+        server.sendmail(sender, receiver, msg.as_string())  # 发送邮件
         print("邮件发送成功")
-    except Exception as e:
+    except smtplib.SMTPException as e:
         print(f"邮件发送失败: {e}")
-
-
-
+    finally:
+        server.quit()  # 关闭连接
 
 def sms_login(request):
-    send_163_email(
-        sender='haibin681528@163.com',  # 你的163邮箱地址
-        auth_code='JXyAZP9w927KayLL',  # 你的SMTP授权码
-        receiver='1071794363@qq.com',  # 收件人邮箱
-        subject='欢迎登录',
-        content='您的邮箱验证码为123456\n\n1分钟内有效!'
-    )
-    return render(request, 'sms_login.html')
+    if request.method == 'GET':
+        form = LoginForm()
+        return render(request, 'sms_login.html', {'form': form})
