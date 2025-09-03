@@ -23,8 +23,9 @@
 <body>
 <div class="box">
     <form method="post">
-        {% csrf_token %}
         <h3 style="text-align: center">短信登录</h3>
+        {% csrf_token %}
+
         {% for field in form %}
             {% if field.name == 'code' %}
                 <div class="form-group" style="position: relative; margin-bottom: 25px">
@@ -34,7 +35,7 @@
                         {{ field }}
                     </div>
                     <div class="col-xs-5">
-                        <input type="button" value="发送短信" class="btn btn-default">
+                        <input id="sendBtn" type="button" value="点击获取验证码" class="btn btn-default">
                     </div>
                     <span style="color:red ;position: absolute">{{ field.errors.0 }}</span>
                 </div>
@@ -50,5 +51,34 @@
         <a href="{% url 'login' %}" style="float: right">用户登录</a>
     </form>
 </div>
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script>
+    // 当页面框架执行完之后，自动执行里面的代码。
+     
+    $(function () {
+        bindSendSmsEvent();
+    })
+
+    function bindSendSmsEvent() {
+        // 1.获取手机号， 向后台发送请求[先不写]
+        // 2.动态效果
+        $("#sendBtn").click(function () {
+            var $smsBtn = $("#sendBtn");
+            // 2.1 禁用
+            $smsBtn.prop("disabled", true);
+            // 2.2 改内容
+            var time = 60;
+            var remind = setInterval(function (){
+                $smsBtn.val(time + "秒重新发送 ");
+                time = time - 1;
+                if (time < 0){
+                    clearInterval(remind);
+                    $smsBtn.val("点击获取验证码");
+                    $smsBtn.prop("disabled", false);
+                }
+            },1000);
+        });
+    }
+</script>
 </body>
 </html>

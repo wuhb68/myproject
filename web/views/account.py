@@ -95,7 +95,7 @@ class SmsloginForm(forms.Form):
     mobile = forms.CharField(label='手机号',
                              widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '手机号'}))
     code = forms.CharField(label='短信验证码',
-                           validators=[RegexValidator(r'^[1-9]+$', "验证码必须为数字"), ],  # 正则表达式
+                           validators=[RegexValidator(r'^[1-9]+$', "验证码必须是数字"), ],  # 正则表达式
                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '短信验证码'}))
 
 def sms_login(request):
