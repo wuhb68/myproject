@@ -98,7 +98,15 @@ class SmsloginForm(forms.Form):
                            validators=[RegexValidator(r'^[1-9]+$', "验证码必须是数字"), ],  # 正则表达式
                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '短信验证码'}))
 
+
 def sms_login(request):
     if request.method == 'GET':
         form = SmsloginForm()
         return render(request, 'sms_login.html', {'form': form})
+
+
+def sms_send(request):
+    """发送短信"""
+    print(request.GET)
+    print(request.POST)
+    return HttpResponse('成功')

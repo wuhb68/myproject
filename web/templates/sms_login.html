@@ -52,31 +52,47 @@
     </form>
 </div>
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'js/csrf.js' %}"></script>
 <script>
     // 当页面框架执行完之后，自动执行里面的代码。
-     
+
     $(function () {
         bindSendSmsEvent();
     })
 
+
     function bindSendSmsEvent() {
-        // 1.获取手机号， 向后台发送请求[先不写]
+
         // 2.动态效果
         $("#sendBtn").click(function () {
+            $.ajax({
+                {#url:'sms/send/'    //向这个地址发送请求#}
+                url: "{% url 'sms_send' %}",   //如果单独放JS文件中引入不能用这个，无法被渲染
+                type: 'POST',
+                data: '{mobile:"18888888888"}',
+                headers: {
+                    "X_CSRFTOKEN": getCookie('csrftoken'),
+                },
+                success: function (res) {
+                    console.log(res);
+                }
+            })
+
+
             var $smsBtn = $("#sendBtn");
             // 2.1 禁用
             $smsBtn.prop("disabled", true);
             // 2.2 改内容
             var time = 60;
-            var remind = setInterval(function (){
+            var remind = setInterval(function () {
                 $smsBtn.val(time + "秒重新发送 ");
                 time = time - 1;
-                if (time < 0){
+                if (time < 0) {
                     clearInterval(remind);
                     $smsBtn.val("点击获取验证码");
                     $smsBtn.prop("disabled", false);
                 }
-            },1000);
+            }, 1000);
         });
     }
 </script>
