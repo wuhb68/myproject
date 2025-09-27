@@ -1,11 +1,17 @@
 import smtplib
+import random
 from django import forms
 from django.core.validators import RegexValidator
+from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
-
+from django_redis import get_redis_connection
 from email.mime.text import MIMEText
 from email.header import Header
+
+from matplotlib.font_manager import json_dump
+
 from utils.encrypt import md5
+from utils.tencent import send_163_email
 from web import models
 
 
@@ -60,35 +66,6 @@ def login(request):
     return HttpResponse('登陆成功')
 
 
-def send_163_email(subject, content):
-    sender = 'haibin681528@163.com'
-    receiver = '1071794363@qq.com'
-
-    # 邮箱账号和密码（注意：这里的密码不是登录密码，而是授权码）
-    email_password = 'LJu4nAW2EKjeJ36r'  # 这是授权码，不是登录密码
-
-    # 邮件内容
-    msg = MIMEText(content, 'plain', 'utf-8')
-    msg['Subject'] = Header(subject, 'utf-8')
-    msg['From'] = sender
-    msg['To'] = receiver
-
-    # 网易邮箱的SMTP服务器地址和端口
-    smtp_server = 'smtp.163.com'
-    smtp_port = 465  # 或者使用25/587，取决于你的服务器配置和安全性需求
-
-    try:
-        # 创建SMTP对象并连接到服务器
-        server = smtplib.SMTP_SSL(smtp_server, smtp_port)  # 使用SSL连接（推荐）
-        server.login(sender, email_password)  # 登录邮箱账号
-        server.sendmail(sender, receiver, msg.as_string())  # 发送邮件
-        print("邮件发送成功")
-    except smtplib.SMTPException as e:
-        print(f"邮件发送失败: {e}")
-    finally:
-        server.quit()  # 关闭连接
-
-
 class SmsloginForm(forms.Form):
     role = forms.ChoiceField(label='角色', choices=(('1', '管理员'), ('2', '客户')), widget=forms.Select(attrs={
         'class': 'form-control'}))
@@ -105,8 +82,25 @@ def sms_login(request):
         return render(request, 'sms_login.html', {'form': form})
 
 
+class MobileForm(forms.Form):
+    mobile = forms.CharField(label='手机号', required=True,
+                             validators=[RegexValidator(r'^1\d{10}', '手机号格式错误'), ])
+
+
 def sms_send(request):
     """发送短信"""
-    print(request.GET)
-    print(request.POST)
+    # 1. 校验手机号格式
+    request.POST.get('mobile')
+    form = MobileForm(data=request.POST)
+    if not form.is_valid():
+        return JsonResponse({'status': False, 'detail': form.errors}, json_dumps_params={"ensure_ascii": False})
+
+    # 2. 发送短信生成验证码
+    mobile = form.cleaned_data.get('mobile')
+    sms_code = random.randint(1000, 9999)
+    is_success = send_163_email(mobile, str(sms_code))
+    if not is_success:
+        return JsonResponse({'status':False,"detail":{'mobile':["发送失败,请稍等重试"]}},json_dumps_params={"ensure_ascii": False})
+
+    # 3. 保存手机号验证码，便于下次校验
     return HttpResponse('成功')

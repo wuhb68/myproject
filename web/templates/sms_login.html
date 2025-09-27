@@ -16,7 +16,9 @@
             padding-right: 40px;
             padding-bottom: 30px;
             box-shadow: 5px 10px 10px rgb(0 0 0 / 5%);
-
+        }
+        .error_message{
+            color: red;position: absolute;
         }
     </style>
 </head>
@@ -31,13 +33,14 @@
                 <div class="form-group" style="position: relative; margin-bottom: 25px">
                 <label>{{ field.label }}</label>
                 <div class="row">
+                    <span class="error_message">{{ field.errors.0 }}</span>
                     <div class="col-xs-7">
                         {{ field }}
                     </div>
                     <div class="col-xs-5">
                         <input id="sendBtn" type="button" value="点击获取验证码" class="btn btn-default">
                     </div>
-                    <span style="color:red ;position: absolute">{{ field.errors.0 }}</span>
+                    <span class="error_message">{{ field.errors.0 }}</span>
                 </div>
             {% else %}
                 <div class="form-group" style="position: relative; margin-bottom: 25px">
@@ -65,16 +68,24 @@
 
         // 2.动态效果
         $("#sendBtn").click(function () {
+            var mobileData = $("#id_mobile").val();
+            //清除所有的错误
+            $(".error-message").empty();
             $.ajax({
                 {#url:'sms/send/'    //向这个地址发送请求#}
                 url: "{% url 'sms_send' %}",   //如果单独放JS文件中引入不能用这个，无法被渲染
                 type: 'POST',
-                data: '{mobile:"18888888888"}',
-                headers: {
-                    "X_CSRFTOKEN": getCookie('csrftoken'),
-                },
+                data: '{mobile:mobileData}',
+                dataType: "Json",
                 success: function (res) {
                     console.log(res);
+                    if (res.status) {
+
+                    } else {
+                        $.each(res.detail, function (k, v) {
+                            $("#id" + k).next().text(v[0]);
+                        })
+                    }
                 }
             })
 
