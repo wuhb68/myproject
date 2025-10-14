@@ -8,4 +8,3 @@ from utils.encrypt import md5
 from web import models
 
 models.Administrator.objects.create(username='admin',password=md5('admin123'),mobile='18888888856')
-from django.conf import settings

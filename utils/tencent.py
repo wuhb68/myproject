@@ -26,8 +26,10 @@ def send_163_email(mobile, sms_code):
         server.login(sender, email_password)  # 登录邮箱账号
         server.sendmail(sender, receiver, msg.as_string())  # 发送邮件
         print("邮件发送成功")
+        return True
     except smtplib.SMTPException as e:
         print(f"邮件发送失败: {e}")
+        return False
     finally:
         server.quit()  # 关闭连接
 
