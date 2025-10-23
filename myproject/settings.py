@@ -118,6 +118,11 @@ CACHES = {
     }
 }
 
+# ###################### 自定义配置 ######################
+LOGIN_HOME = "/home/"
+NB_SESSION_KEY = "user_info"
+NB_LOGIN_URL = "/login/"
+NB_WHITE_URL = ['/login/', '/sms/login/', '/sms/send/']
 
 
 # Password validation
