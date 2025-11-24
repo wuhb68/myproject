@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-v7h6-uu&vr^1k+h#s#3oi7!a#0rh87id!oszhqzaafllf!(bdr
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -48,6 +46,7 @@ MIDDLEWARE = [
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'utils.md.AuthMiddleware'
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -69,7 +68,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -95,6 +93,7 @@ DATABASES = {
 # session
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2
 SESSION_COOKIE_NAME = "sid"  # Session的cookie保存在浏览器上时的key，即：sessionid＝随机字符串
 SESSION_COOKIE_PATH = "/"  # Session的cookie保存的路径
 SESSION_COOKIE_DOMAIN = None  # Session的cookie保存的域名
@@ -118,13 +117,6 @@ CACHES = {
     }
 }
 
-# ###################### 自定义配置 ######################
-LOGIN_HOME = "/home/"
-NB_SESSION_KEY = "user_info"
-NB_LOGIN_URL = "/login/"
-NB_WHITE_URL = ['/login/', '/sms/login/', '/sms/send/']
-
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -143,7 +135,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -157,7 +148,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -167,3 +157,22 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ###################### 自定义配置 ######################
+LOGIN_HOME = "/home/"
+NB_SESSION_KEY = "user_info"
+NB_LOGIN_URL = "/login/"
+NB_WHITE_URL = ['/login/', '/sms/login/', '/sms/send/']
+
+NB_MENU = {
+    'ADMIN': [
+        {'text': "用户管理", 'url': '/xxx/xx'},
+        {'text': "订单管理", 'url': '/xxx/xx'},
+        {'text': "财务管理", 'url': '/xxx/xx'},
+        {'text': "物品管理", 'url': '/xxx/xx'},
+    ],
+    'CUSTOMER': [
+        {'text': "订单管理", 'url': '/xxx/xx'},
+        {'text': "物品管理", 'url': '/xxx/xx'},
+    ],
+}

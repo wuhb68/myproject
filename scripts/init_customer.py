@@ -12,9 +12,9 @@ from web import models
 #     percent='80'
 # )
 models.Customer.objects.create(
-    username='wu',
-    password=md5('wu'),
-    mobile='18888888884',
+    username='wuhb1',
+    password=md5('wuhb1'),
+    mobile='18888888889',
     level_id=1,
     creator_id=1,
 )

@@ -22,17 +22,15 @@ def login(request):
     if role == '1':
         user_object = models.Administrator.objects.filter(active=1).filter(**data_dict).first()
     else:
-        user_object = models.Customer.objects.filter(active=2).filter(**data_dict).first()
-
+        user_object = models.Customer.objects.filter(active=1).filter(**data_dict).first()
     # 2.1 校验失败
     if not user_object:
         form.add_error("username", "用户名或密码错误")
         return render(request, 'login.html', {'form': form})
-
     # 2.2 校验成功, 用户信息写入session+进入项目后台
     mapping = {"1": "ADMIN", "2": "CUSTOMER"}
-    request.session['role'] = {'role': mapping[role], 'name': user_object.username, 'id': user_object.id}
-
+    request.session[settings.NB_SESSION_KEY] = {'role': mapping[role], 'name': user_object.username,
+                                                'id': user_object.id}
     return redirect(settings.LOGIN_HOME)
 
 
@@ -80,3 +78,7 @@ def sms_login(request):
     res.status = True
     res.data = settings.LOGIN_HOME
     return JsonResponse(res.dict)
+
+
+def home(request):
+    return render(request, 'home.html')
